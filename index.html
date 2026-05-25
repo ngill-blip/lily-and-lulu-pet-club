@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lily & Lulu Pet Club — My Thoughts & Ideas</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #fdf6f0;
+      color: #3a2e28;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #c0392b 0%, #e67e22 100%);
+      color: white;
+      padding: 30px 40px 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    header .paw { font-size: 2.4rem; }
+    header h1   { font-size: 1.9rem; font-weight: normal; letter-spacing: 0.5px; }
+    header p    { font-size: 1rem; opacity: 0.88; margin-top: 4px; }
+
+    /* ── Setup banner (shown until API URL is set) ── */
+    #setup-banner {
+      background: #fff3cd;
+      border-bottom: 2px solid #ffc107;
+      padding: 14px 24px;
+      text-align: center;
+      font-size: 1rem;
+      color: #7a5800;
+      display: none;
+    }
+    #setup-banner a { color: #c0392b; font-weight: bold; }
+
+    /* ── Sync status ── */
+    #sync-bar {
+      text-align: center;
+      padding: 8px;
+      font-size: 0.9rem;
+      background: #f0faf4;
+      color: #2e7d52;
+      border-bottom: 1px solid #c8ecd8;
+      display: none;
+    }
+    #sync-bar.error { background: #fff0f0; color: #c0392b; border-color: #f5c6c6; }
+
+    /* ── Main layout ── */
+    main {
+      max-width: 860px;
+      margin: 36px auto;
+      padding: 0 24px;
+    }
+
+    /* ── Add thought card ── */
+    .add-card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px 32px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.08);
+      margin-bottom: 36px;
+    }
+    .add-card h2 { font-size: 1.3rem; color: #c0392b; margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #5a4035;
+    }
+    select, textarea, input[type="text"] {
+      width: 100%;
+      border: 2px solid #e8d5c8;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 1.1rem;
+      font-family: inherit;
+      color: #3a2e28;
+      background: #fffaf7;
+      transition: border-color 0.2s;
+      margin-bottom: 18px;
+    }
+    select:focus, textarea:focus, input:focus {
+      outline: none;
+      border-color: #e67e22;
+      background: #fff;
+    }
+    textarea { resize: vertical; min-height: 110px; }
+
+    .btn-add {
+      background: linear-gradient(135deg, #c0392b, #e67e22);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 36px;
+      font-size: 1.15rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-add:hover  { opacity: 0.9; }
+    .btn-add:active { transform: scale(0.98); }
+    .btn-add:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Filter row ── */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-row span { font-size: 1rem; color: #7a6055; font-weight: bold; }
+    .filter-btn {
+      background: white;
+      border: 2px solid #e8d5c8;
+      border-radius: 20px;
+      padding: 6px 18px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+      color: #5a4035;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: #e67e22;
+      border-color: #e67e22;
+      color: white;
+    }
+
+    /* ── Thoughts list ── */
+    #thoughts-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .thought-card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      border-left: 5px solid #e67e22;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+    .thought-card[data-cat="💡 Idea"]     { border-left-color: #f39c12; }
+    .thought-card[data-cat="✅ To-Do"]    { border-left-color: #27ae60; }
+    .thought-card[data-cat="🛒 Product"]  { border-left-color: #2980b9; }
+    .thought-card[data-cat="🐾 Service"]  { border-left-color: #8e44ad; }
+    .thought-card[data-cat="💬 Question"] { border-left-color: #e74c3c; }
+    .thought-card[data-cat="📝 General"]  { border-left-color: #7f8c8d; }
+
+    .thought-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .thought-cat  { font-size: 0.88rem; font-weight: bold; background: #fef3e2; color: #c0392b; padding: 3px 12px; border-radius: 20px; }
+    .thought-date { font-size: 0.85rem; color: #a08070; }
+    .thought-text { font-size: 1.1rem; line-height: 1.65; color: #3a2e28; white-space: pre-wrap; }
+
+    .btn-delete {
+      position: absolute;
+      top: 16px; right: 18px;
+      background: none; border: none;
+      font-size: 1.3rem; cursor: pointer;
+      color: #c9b5ad; transition: color 0.15s; line-height: 1;
+    }
+    .btn-delete:hover { color: #e74c3c; }
+
+    /* ── Loading ── */
+    .loading {
+      text-align: center; padding: 60px 20px; color: #b0938a;
+    }
+    .spinner {
+      display: inline-block; width: 36px; height: 36px;
+      border: 4px solid #f3e0d8; border-top-color: #e67e22;
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Empty state ── */
+    .empty-state { text-align: center; padding: 60px 20px; color: #b0938a; }
+    .empty-state .icon { font-size: 3.5rem; margin-bottom: 16px; }
+    .empty-state p { font-size: 1.1rem; }
+
+    /* ── Stats bar ── */
+    .stats-bar { text-align: center; font-size: 0.9rem; color: #a08070; margin-top: 40px; padding-bottom: 40px; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #27ae60; color: white; padding: 12px 28px;
+      border-radius: 30px; font-size: 1rem;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease; pointer-events: none; z-index: 999;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Search ── */
+    .search-wrap { margin-bottom: 20px; }
+    .search-wrap input { margin-bottom: 0; padding-left: 44px;
+      background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23a08070' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 14px center;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 20px; }
+      header h1 { font-size: 1.4rem; }
+      main { margin: 20px auto; }
+      .add-card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="paw">🐾</div>
+  <div>
+    <h1>Lily &amp; Lulu Pet Club</h1>
+    <p>My Thoughts &amp; Ideas — synced across all your devices</p>
+  </div>
+</header>
+
+<div id="setup-banner">
+  ⚠️ One-time setup needed — please follow the <a href="#" onclick="alert('See the setup guide in your Lily and Lulu folder!')">setup guide</a> to connect your cloud storage.
+</div>
+
+<div id="sync-bar"></div>
+
+<main>
+  <div class="add-card">
+    <h2>✏️ Add a New Thought</h2>
+    <label for="cat-select">Category</label>
+    <select id="cat-select">
+      <option>💡 Idea</option>
+      <option>✅ To-Do</option>
+      <option>🛒 Product</option>
+      <option>🐾 Service</option>
+      <option>💬 Question</option>
+      <option>📝 General</option>
+    </select>
+    <label for="thought-input">Your thought</label>
+    <textarea id="thought-input" placeholder="Write anything — an idea, a question, something to remember…"></textarea>
+    <button class="btn-add" id="save-btn" onclick="addThought()">Save This Thought 🐾</button>
+  </div>
+
+  <div class="search-wrap">
+    <input type="text" id="search-input" placeholder="Search your thoughts…" oninput="renderList()" />
+  </div>
+
+  <div class="filter-row">
+    <span>Show:</span>
+    <button class="filter-btn active" data-filter="All"        onclick="setFilter(this)">All</button>
+    <button class="filter-btn" data-filter="💡 Idea"          onclick="setFilter(this)">💡 Ideas</button>
+    <button class="filter-btn" data-filter="✅ To-Do"         onclick="setFilter(this)">✅ To-Dos</button>
+    <button class="filter-btn" data-filter="🛒 Product"       onclick="setFilter(this)">🛒 Products</button>
+    <button class="filter-btn" data-filter="🐾 Service"       onclick="setFilter(this)">🐾 Services</button>
+    <button class="filter-btn" data-filter="💬 Question"      onclick="setFilter(this)">💬 Questions</button>
+    <button class="filter-btn" data-filter="📝 General"       onclick="setFilter(this)">📝 General</button>
+  </div>
+
+  <div id="thoughts-list">
+    <div class="loading"><div class="spinner"></div><br>Loading your thoughts…</div>
+  </div>
+  <p class="stats-bar" id="stats-bar"></p>
+</main>
+
+<div id="toast"></div>
+
+<script>
+  // ── CONFIGURATION ────────────────────────────────────────────
+  // Replace this URL with your Apps Script Web App URL after deployment
+  const API_URL = 'YOUR_APPS_SCRIPT_URL';
+  // ─────────────────────────────────────────────────────────────
+
+  let thoughts    = [];
+  let activeFilter = 'All';
+
+  // ── Init ─────────────────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', function() {
+    if (API_URL === 'YOUR_APPS_SCRIPT_URL') {
+      document.getElementById('setup-banner').style.display = 'block';
+      document.getElementById('thoughts-list').innerHTML =
+        '<div class="empty-state"><div class="icon">⚙️</div><p>Follow the setup guide to get started!</p></div>';
+      return;
+    }
+    loadThoughts();
+  });
+
+  // ── Load from server ──────────────────────────────────────────
+  function loadThoughts() {
+    showSync('⏳ Loading…', false);
+    fetch(API_URL)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.ok) {
+          thoughts = data.thoughts || [];
+          renderList();
+          hideSync();
+        } else {
+          showSync('❌ Could not load thoughts. Check your connection.', true);
+          renderList();
+        }
+      })
+      .catch(function() {
+        showSync('❌ Could not connect. Showing any locally cached thoughts.', true);
+        // Fallback to localStorage cache
+        try { thoughts = JSON.parse(localStorage.getItem('llThoughtsCache') || '[]'); } catch(e) {}
+        renderList();
+      });
+  }
+
+  // ── Add ───────────────────────────────────────────────────────
+  function addThought() {
+    var cat  = document.getElementById('cat-select').value;
+    var text = document.getElementById('thought-input').value.trim();
+    if (!text) { document.getElementById('thought-input').focus(); return; }
+
+    var btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    var newThought = {
+      id:   String(Date.now()),
+      cat:  cat,
+      text: text,
+      date: new Date().toLocaleDateString('en-US', {
+        weekday:'short', year:'numeric', month:'short', day:'numeric',
+        hour:'2-digit', minute:'2-digit'
+      })
+    };
+
+    fetch(API_URL, {
+      method:  'POST',
+      body:    JSON.stringify({ action: 'add', id: newThought.id, cat: newThought.cat, text: newThought.text, date: newThought.date }),
+      headers: { 'Content-Type': 'text/plain' }  // text/plain avoids preflight
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      thoughts.unshift(newThought);
+      cacheLocally();
+      renderList();
+      document.getElementById('thought-input').value = '';
+      showToast('Saved! 🐾');
+    })
+    .catch(function() {
+      showToast('⚠️ Not saved — check your connection');
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = 'Save This Thought 🐾';
+    });
+  }
+
+  // ── Delete ────────────────────────────────────────────────────
+  function deleteThought(id) {
+    if (!confirm('Remove this thought?')) return;
+    fetch(API_URL, {
+      method:  'POST',
+      body:    JSON.stringify({ action: 'delete', id: id }),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    thoughts = thoughts.filter(function(t) { return t.id !== id; });
+    cacheLocally();
+    renderList();
+  }
+
+  // ── Filter ────────────────────────────────────────────────────
+  function setFilter(btn) {
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    renderList();
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  function renderList() {
+    var query   = (document.getElementById('search-input').value || '').toLowerCase();
+    var visible = thoughts.slice();
+    if (activeFilter !== 'All') visible = visible.filter(function(t) { return t.cat === activeFilter; });
+    if (query) visible = visible.filter(function(t) { return t.text.toLowerCase().includes(query) || t.cat.toLowerCase().includes(query); });
+
+    var list = document.getElementById('thoughts-list');
+
+    if (visible.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="icon">🐾</div><p>' +
+        (thoughts.length === 0 ? 'No thoughts yet — add your first one above!' : 'Nothing matches. Try a different filter.') +
+        '</p></div>';
+    } else {
+      list.innerHTML = visible.map(function(t) {
+        return '<div class="thought-card" data-cat="' + esc(t.cat) + '">' +
+          '<div class="thought-meta"><span class="thought-cat">' + esc(t.cat) + '</span><span class="thought-date">' + esc(t.date) + '</span></div>' +
+          '<div class="thought-text">' + esc(t.text) + '</div>' +
+          '<button class="btn-delete" onclick="deleteThought(\'' + t.id + '\')" title="Remove">✕</button>' +
+          '</div>';
+      }).join('');
+    }
+
+    document.getElementById('stats-bar').textContent =
+      thoughts.length + ' thought' + (thoughts.length !== 1 ? 's' : '') + ' saved total';
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function cacheLocally() {
+    try { localStorage.setItem('llThoughtsCache', JSON.stringify(thoughts)); } catch(e) {}
+  }
+  function showSync(msg, isError) {
+    var bar = document.getElementById('sync-bar');
+    bar.textContent = msg;
+    bar.style.display = 'block';
+    bar.className = isError ? 'error' : '';
+  }
+  function hideSync() {
+    document.getElementById('sync-bar').style.display = 'none';
+  }
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2400);
+  }
+
+  // Ctrl+Enter to save
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('thought-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && e.ctrlKey) addThought();
+    });
+  });
+</script>
+</body>
+</html>
