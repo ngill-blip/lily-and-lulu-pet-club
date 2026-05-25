@@ -150,12 +150,12 @@
     }
     @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 
-    .thought-card[data-cat="💡 Idea"]     { border-left-color: #f39c12; }
-    .thought-card[data-cat="✅ To-Do"]    { border-left-color: #27ae60; }
-    .thought-card[data-cat="🛒 Product"]  { border-left-color: #2980b9; }
-    .thought-card[data-cat="🐾 Service"]  { border-left-color: #8e44ad; }
-    .thought-card[data-cat="💬 Question"] { border-left-color: #e74c3c; }
-    .thought-card[data-cat="📝 General"]  { border-left-color: #7f8c8d; }
+    .thought-card[data-cat="🌐 Domain Names"]    { border-left-color: #2980b9; }
+    .thought-card[data-cat="💭 Website Ideas"]   { border-left-color: #8e44ad; }
+    .thought-card[data-cat="🔍 Things to Check"] { border-left-color: #f39c12; }
+    .thought-card[data-cat="✅ Go/No-Go"]        { border-left-color: #27ae60; }
+    .thought-card[data-cat="⚖️ Legal"]           { border-left-color: #e74c3c; }
+    .thought-card[data-cat="💡 Other Ideas"]     { border-left-color: #7f8c8d; }
 
     .thought-meta {
       display: flex;
@@ -168,6 +168,19 @@
     .thought-cat  { font-size: 0.88rem; font-weight: bold; background: #fef3e2; color: #c0392b; padding: 3px 12px; border-radius: 20px; }
     .thought-date { font-size: 0.85rem; color: #a08070; }
     .thought-text { font-size: 1.1rem; line-height: 1.65; color: #3a2e28; white-space: pre-wrap; }
+
+    .thought-avail {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      padding: 4px 14px;
+      border-radius: 20px;
+      background: #f0faf4;
+      color: #2e7d52;
+    }
+    .thought-avail.taken   { background: #fff0f0; color: #c0392b; }
+    .thought-avail.unknown { background: #fffbe6; color: #7a5800; }
 
     .btn-delete {
       position: absolute;
@@ -243,12 +256,12 @@
     <h2>✏️ Add a New Thought</h2>
     <label for="cat-select">Category</label>
     <select id="cat-select">
-      <option>💡 Idea</option>
-      <option>✅ To-Do</option>
-      <option>🛒 Product</option>
-      <option>🐾 Service</option>
-      <option>💬 Question</option>
-      <option>📝 General</option>
+      <option>🌐 Domain Names</option>
+      <option>💭 Website Ideas</option>
+      <option>🔍 Things to Check</option>
+      <option>✅ Go/No-Go</option>
+      <option>⚖️ Legal</option>
+      <option>💡 Other Ideas</option>
     </select>
     <label for="thought-input">Your thought</label>
     <textarea id="thought-input" placeholder="Write anything — an idea, a question, something to remember…"></textarea>
@@ -261,13 +274,13 @@
 
   <div class="filter-row">
     <span>Show:</span>
-    <button class="filter-btn active" data-filter="All"        onclick="setFilter(this)">All</button>
-    <button class="filter-btn" data-filter="💡 Idea"          onclick="setFilter(this)">💡 Ideas</button>
-    <button class="filter-btn" data-filter="✅ To-Do"         onclick="setFilter(this)">✅ To-Dos</button>
-    <button class="filter-btn" data-filter="🛒 Product"       onclick="setFilter(this)">🛒 Products</button>
-    <button class="filter-btn" data-filter="🐾 Service"       onclick="setFilter(this)">🐾 Services</button>
-    <button class="filter-btn" data-filter="💬 Question"      onclick="setFilter(this)">💬 Questions</button>
-    <button class="filter-btn" data-filter="📝 General"       onclick="setFilter(this)">📝 General</button>
+    <button class="filter-btn active" data-filter="All"               onclick="setFilter(this)">All</button>
+    <button class="filter-btn" data-filter="🌐 Domain Names"         onclick="setFilter(this)">🌐 Domains</button>
+    <button class="filter-btn" data-filter="💭 Website Ideas"        onclick="setFilter(this)">💭 Website</button>
+    <button class="filter-btn" data-filter="🔍 Things to Check"      onclick="setFilter(this)">🔍 To Check</button>
+    <button class="filter-btn" data-filter="✅ Go/No-Go"             onclick="setFilter(this)">✅ Go/No-Go</button>
+    <button class="filter-btn" data-filter="⚖️ Legal"               onclick="setFilter(this)">⚖️ Legal</button>
+    <button class="filter-btn" data-filter="💡 Other Ideas"          onclick="setFilter(this)">💡 Other</button>
   </div>
 
   <div id="thoughts-list">
@@ -352,7 +365,12 @@
       cacheLocally();
       renderList();
       document.getElementById('thought-input').value = '';
-      showToast('Saved! 🐾');
+      if (newThought.cat === '🌐 Domain Names') {
+        showToast('Saved! Checking availability… 🔍');
+        setTimeout(function() { loadThoughts(); }, 5000);
+      } else {
+        showToast('Saved! 🐾');
+      }
     })
     .catch(function() {
       showToast('⚠️ Not saved — check your connection');
@@ -403,6 +421,7 @@
         return '<div class="thought-card" data-cat="' + esc(t.cat) + '">' +
           '<div class="thought-meta"><span class="thought-cat">' + esc(t.cat) + '</span><span class="thought-date">' + esc(t.date) + '</span></div>' +
           '<div class="thought-text">' + esc(t.text) + '</div>' +
+          (t.availability ? availBadge(t.availability) : '') +
           '<button class="btn-delete" onclick="deleteThought(\'' + t.id + '\')" title="Remove">✕</button>' +
           '</div>';
       }).join('');
@@ -415,6 +434,11 @@
   // ── Helpers ───────────────────────────────────────────────────
   function esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function availBadge(a) {
+    var cls = a.indexOf('✅') !== -1 ? '' : a.indexOf('❌') !== -1 ? ' taken' : ' unknown';
+    return '<div class="thought-avail' + cls + '">' + esc(a) + '</div>';
   }
   function cacheLocally() {
     try { localStorage.setItem('llThoughtsCache', JSON.stringify(thoughts)); } catch(e) {}
