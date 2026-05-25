@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐾 Weekly Synthesis — Lily & Lulu Pet Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #fdf6f0;
+      color: #3d2c2c;
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding: 2.5rem 2rem;
+      background: linear-gradient(135deg, #f5a7c7 0%, #c9a7f5 100%);
+      border-radius: 20px;
+      color: white;
+    }
+    .header .paw { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.3rem;
+    }
+    .header .subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      font-weight: 600;
+    }
+    .header .week-badge {
+      display: inline-block;
+      margin-top: 1rem;
+      background: rgba(255,255,255,0.3);
+      border-radius: 30px;
+      padding: 0.3rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    /* ── Section cards ── */
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 1.6rem 1.8rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 12px rgba(180,130,180,0.1);
+      border-left: 5px solid #f5a7c7;
+    }
+    .section.green  { border-left-color: #7ec98e; }
+    .section.purple { border-left-color: #b39ddb; }
+    .section.orange { border-left-color: #ffb74d; }
+    .section.blue   { border-left-color: #81d4fa; }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* ── Domain table ── */
+    .domain-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid #f3e8f3;
+    }
+    .domain-item:last-child { border-bottom: none; }
+    .domain-name {
+      font-weight: 700;
+      font-size: 1rem;
+      min-width: 120px;
+    }
+    .avail-list { flex: 1; }
+    .avail-tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 0.15rem 0.6rem;
+      margin: 0.1rem 0.15rem;
+    }
+    .avail-tag.yes { background: #e8f5e9; color: #2e7d32; }
+    .avail-tag.no  { background: #fce4ec; color: #c62828; }
+    .avail-tag.unk { background: #f3e5f5; color: #6a1b9a; }
+    .domain-note {
+      font-size: 0.85rem;
+      color: #8d6e8d;
+      margin-top: 0.3rem;
+      font-style: italic;
+    }
+
+    /* ── Highlights ── */
+    .highlights {
+      background: linear-gradient(135deg, #fff9f0, #fce4f4);
+      border-radius: 16px;
+      padding: 1.8rem;
+      margin-bottom: 1.2rem;
+      border: 2px dashed #f5a7c7;
+    }
+    .highlights .section-title { color: #b5618c; }
+    .highlight-item {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 0.9rem;
+      align-items: flex-start;
+    }
+    .highlight-item:last-child { margin-bottom: 0; }
+    .highlight-dot {
+      font-size: 1.2rem;
+      margin-top: 0.05rem;
+      flex-shrink: 0;
+    }
+    .highlight-text {
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      color: #b07090;
+      font-size: 0.82rem;
+      margin-top: 2rem;
+    }
+    .footer a { color: #c47faa; text-decoration: none; font-weight: 700; }
+    .footer a:hover { text-decoration: underline; }
+
+    p { line-height: 1.6; font-size: 0.95rem; }
+    .note { font-size: 0.85rem; color: #9e7e9e; margin-top: 0.6rem; font-style: italic; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="paw">🐾</span>
+    <h1>Lily &amp; Lulu Pet Club</h1>
+    <div class="subtitle">Weekly Synthesis</div>
+    <div class="week-badge">Week of 19 – 25 May 2026</div>
+  </div>
+
+  <!-- Domain Names -->
+  <div class="section">
+    <div class="section-title">🌐 Domain Name Ideas</div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">petzlily</div>
+        <div class="avail-list">
+          <span class="avail-tag yes">✅ petzlily.com</span>
+          <span class="avail-tag yes">✅ petzlily.net</span>
+          <span class="avail-tag yes">✅ petzlily.org</span>
+          <span class="avail-tag yes">✅ petzlily.co</span>
+          <span class="avail-tag yes">✅ petzlily.pet</span>
+        </div>
+        <div class="domain-note">⭐ Best option so far — all five TLDs are available. "Lily" makes it personal and warm, perfect for your brand.</div>
+      </div>
+    </div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">Petzintell</div>
+        <div class="avail-list">
+          <span class="avail-tag unk">⏳ Not yet checked</span>
+        </div>
+        <div class="domain-note">Worth checking! "Intelligence" meets "Petz" — could work if the business has an advice or expert angle.</div>
+      </div>
+    </div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">Petzwise</div>
+        <div class="avail-list">
+          <span class="avail-tag unk">⏳ Not yet checked</span>
+        </div>
+        <div class="domain-note">Lovely name — "wise" feels trustworthy and friendly. Definitely check availability next week.</div>
+      </div>
+    </div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">lilyandlulu</div>
+        <div class="avail-list">
+          <span class="avail-tag unk">⏳ Re-check needed</span>
+        </div>
+        <div class="domain-note">The brand name itself — worth a proper check. The domain system was still being set up when this was logged.</div>
+      </div>
+    </div>
+
+    <p class="note">💡 Tip: Next time you're on the site, type just the name without .com — the system now checks .com, .net, .org, .co and .pet automatically!</p>
+  </div>
+
+  <!-- Other Ideas -->
+  <div class="section green">
+    <div class="section-title">💡 Other Ideas</div>
+    <p>Early-stage brainstorming is underway. The "test" entry from this week marks the very first thought saved to the system — a milestone! Now that everything is working, next week's log should start filling up with the real ideas.</p>
+  </div>
+
+  <!-- Highlights -->
+  <div class="highlights">
+    <div class="section-title">✨ This Week's Highlights</div>
+
+    <div class="highlight-item">
+      <span class="highlight-dot">🚀</span>
+      <span class="highlight-text"><strong>The Thoughts Log is live!</strong> The website is up at GitHub Pages and saving ideas to Google Sheets. This is the foundation everything else will be built on — a huge step.</span>
+    </div>
+
+    <div class="highlight-item">
+      <span class="highlight-dot">🌐</span>
+      <span class="highlight-text"><strong>Domain checking works end-to-end.</strong> Type a name idea and the system automatically checks availability across five extensions. <em>petzlily</em> is available on all of them — that's worth noting.</span>
+    </div>
+
+    <div class="highlight-item">
+      <span class="highlight-dot">⭐</span>
+      <span class="highlight-text"><strong>Strong early name candidates.</strong> You've already surfaced three genuinely interesting options: <em>petzlily</em> (personal and warm), <em>petzwise</em> (trustworthy), and <em>petzintell</em> (expert-feeling). Good instincts!</span>
+    </div>
+
+    <div class="highlight-item">
+      <span class="highlight-dot">📋</span>
+      <span class="highlight-text"><strong>Next step: keep logging.</strong> The system is ready — the more you use it, the more useful this weekly summary becomes. Jot down anything: website ideas, things to research, yes/no decisions, legal questions.</span>
+    </div>
+
+    <div class="highlight-item">
+      <span class="highlight-dot">💜</span>
+      <span class="highlight-text"><strong>What a first week.</strong> You've gone from idea to a working website with a backend, domain checking, and a weekly review system. That's more than most people ever do. Onwards!</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    Generated automatically every Friday · <a href="https://ngill-blip.github.io/lily-and-lulu-pet-club/">← Back to My Thoughts</a>
+  </div>
+
+</div>
+</body>
+</html>
