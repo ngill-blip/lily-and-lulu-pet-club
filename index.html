@@ -271,6 +271,54 @@
     .pwd-error { color: #c0392b; font-size: 0.9rem; margin-top: 10px; display: none; }
 
     #app { display: none; }
+
+    /* ── Mode toggle ── */
+    .mode-toggle { display: flex; gap: 8px; margin-bottom: 20px; }
+    .mode-btn {
+      flex: 1; padding: 11px 16px;
+      border: 2px solid #e8d5c8; border-radius: 10px;
+      background: white; color: #7a6055;
+      font-family: inherit; font-size: 1rem; font-weight: bold;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .mode-btn.active {
+      background: linear-gradient(135deg, #c0392b, #e67e22);
+      border-color: transparent; color: white;
+    }
+    .mode-btn:hover:not(.active) { border-color: #e67e22; color: #c0392b; }
+
+    /* ── Domain line list ── */
+    .section-label {
+      font-size: 0.82rem; font-weight: bold; color: #a08070;
+      letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 14px;
+    }
+    .domain-line {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 18px; background: white; border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      border-left: 4px solid #2980b9; transition: box-shadow 0.15s;
+    }
+    .domain-line:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.1); }
+    .domain-base {
+      font-weight: 700; font-size: 1rem;
+      min-width: 100px; color: #3a2e28;
+    }
+    .domain-avails { flex: 1; display: flex; flex-wrap: wrap; gap: 5px; }
+    .avail-pill {
+      display: inline-block; font-size: 0.78rem; font-weight: 700;
+      padding: 3px 8px; border-radius: 10px; white-space: nowrap;
+    }
+    .avail-pill.yes { background: #e8f5e9; color: #2e7d32; }
+    .avail-pill.no  { background: #fce4ec; color: #c62828; }
+    .avail-pill.unk { background: #fffbe6; color: #7a5800; }
+    .avail-pill.chk { background: #f3e5f5; color: #6a1b9a; }
+    .domain-line-date { font-size: 0.8rem; color: #b0938a; white-space: nowrap; }
+    .domain-del {
+      background: none; border: none; cursor: pointer;
+      color: #c9b5ad; font-size: 1.1rem; padding: 0; line-height: 1;
+      flex-shrink: 0; transition: color 0.15s;
+    }
+    .domain-del:hover { color: #e74c3c; }
   </style>
 </head>
 <body>
@@ -308,25 +356,20 @@
 <main>
   <div class="add-card">
     <h2>✏️ Add a New Thought</h2>
-    <label for="cat-select">Category</label>
-    <select id="cat-select">
-      <option>🌐 Domain Names</option>
-      <option>💭 Website Ideas</option>
-      <option>🔍 Things to Check</option>
-      <option>✅ Go/No-Go</option>
-      <option>⚖️ Legal</option>
-      <option>💡 Other Ideas</option>
-    </select>
-    <label for="thought-input">Your thought</label>
-    <textarea id="thought-input" placeholder="Write anything — an idea, a question, something to remember…"></textarea>
-    <button class="btn-add" id="save-btn" onclick="addThought()">Save This Thought 🐾</button>
+    <div class="mode-toggle">
+      <button id="mode-idea"   class="mode-btn active" onclick="setMode('idea')">💭 Idea</button>
+      <button id="mode-domain" class="mode-btn"        onclick="setMode('domain')">🌐 Check Domain</button>
+    </div>
+    <textarea id="thought-input" placeholder="Write any idea, question, or thought…"></textarea>
+    <button class="btn-add" id="save-btn" onclick="addThought()">Save Idea 💭</button>
   </div>
 
   <div class="search-wrap">
-    <input type="text" id="search-input" placeholder="Search your thoughts…" oninput="renderList()" />
+    <input type="text" id="search-input" placeholder="Search domain names…" oninput="renderList()" />
   </div>
 
   <!-- Filter row hidden: only Domain Names are shown publicly -->
+  <p class="section-label">🌐 Domain Name Checks</p>
 
   <div id="thoughts-list">
     <div class="loading"><div class="spinner"></div><br>Loading your thoughts…</div>
@@ -346,6 +389,24 @@
 
   let thoughts    = [];
   let activeFilter = 'All';
+  let currentMode  = 'idea'; // 'idea' | 'domain'
+
+  // ── Mode toggle ───────────────────────────────────────────────
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('mode-idea').classList.toggle('active', mode === 'idea');
+    document.getElementById('mode-domain').classList.toggle('active', mode === 'domain');
+    var input = document.getElementById('thought-input');
+    var btn   = document.getElementById('save-btn');
+    if (mode === 'domain') {
+      input.placeholder = 'Type a domain name to check (e.g. petzlily or petzlily.com)…';
+      btn.textContent   = 'Check Availability 🔍';
+    } else {
+      input.placeholder = 'Write any idea, question, or thought…';
+      btn.textContent   = 'Save Idea 💭';
+    }
+    input.focus();
+  }
 
   // ── Init ─────────────────────────────────────────────────────
   window.addEventListener('DOMContentLoaded', function() {
@@ -383,7 +444,7 @@
 
   // ── Add ───────────────────────────────────────────────────────
   function addThought() {
-    var cat  = document.getElementById('cat-select').value;
+    var cat  = currentMode === 'domain' ? '🌐 Domain Names' : ''; // '' triggers auto-tag on backend
     var text = document.getElementById('thought-input').value.trim();
     if (!text) { document.getElementById('thought-input').focus(); return; }
 
@@ -391,32 +452,28 @@
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
-    var newThought = {
-      id:   String(Date.now()),
-      cat:  cat,
-      text: text,
-      date: new Date().toLocaleDateString('en-US', {
-        weekday:'short', year:'numeric', month:'short', day:'numeric',
-        hour:'2-digit', minute:'2-digit'
-      })
-    };
+    var nowDate = new Date().toLocaleDateString('en-US', {
+      weekday:'short', year:'numeric', month:'short', day:'numeric',
+      hour:'2-digit', minute:'2-digit'
+    });
 
     fetch(API_URL, {
       method:  'POST',
-      body:    JSON.stringify({ action: 'add', id: newThought.id, cat: newThought.cat, text: newThought.text, date: newThought.date }),
+      body:    JSON.stringify({ action: 'add', id: String(Date.now()), cat: cat, text: text, date: nowDate }),
       headers: { 'Content-Type': 'text/plain' },
-      mode:    'no-cors'  // Google Apps Script redirect fix
+      mode:    'no-cors'
     })
     .then(function() {
-      thoughts.unshift(newThought);
-      cacheLocally();
-      renderList();
       document.getElementById('thought-input').value = '';
-      if (newThought.cat === '🌐 Domain Names') {
+      if (currentMode === 'domain') {
+        // Add optimistically and reload in 5s once availability is checked
+        thoughts.unshift({ id: String(Date.now()), cat: '🌐 Domain Names', text: text, date: nowDate, availability: '' });
+        cacheLocally();
+        renderList();
         showToast('Saved! Checking availability… 🔍');
         setTimeout(function() { loadThoughts(); }, 5000);
       } else {
-        showToast('Saved! 🐾');
+        showToast('Idea saved! 💭');
       }
     })
     .catch(function() {
@@ -424,7 +481,7 @@
     })
     .finally(function() {
       btn.disabled = false;
-      btn.textContent = 'Save This Thought 🐾';
+      btn.textContent = currentMode === 'domain' ? 'Check Availability 🔍' : 'Save Idea 💭';
     });
   }
 
@@ -442,14 +499,6 @@
     renderList();
   }
 
-  // ── Filter ────────────────────────────────────────────────────
-  function setFilter(btn) {
-    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    activeFilter = btn.dataset.filter;
-    renderList();
-  }
-
   // ── Render ────────────────────────────────────────────────────
   function renderList() {
     var query   = (document.getElementById('search-input').value || '').toLowerCase();
@@ -461,22 +510,27 @@
     var list = document.getElementById('thoughts-list');
 
     if (visible.length === 0) {
-      list.innerHTML = '<div class="empty-state"><div class="icon">🐾</div><p>' +
-        (thoughts.length === 0 ? 'No thoughts yet — add your first one above!' : 'Nothing matches. Try a different filter.') +
+      list.innerHTML = '<div class="empty-state"><div class="icon">🌐</div><p>' +
+        (thoughts.filter(function(t){ return t.cat === '🌐 Domain Names'; }).length === 0
+          ? 'No domain names checked yet — switch to 🌐 Check Domain above!'
+          : 'No domain names match your search.') +
         '</p></div>';
     } else {
       list.innerHTML = visible.map(function(t) {
-        return '<div class="thought-card" data-cat="' + esc(t.cat) + '">' +
-          '<div class="thought-meta"><span class="thought-cat">' + esc(t.cat) + '</span><span class="thought-date">' + esc(t.date) + '</span></div>' +
-          '<div class="thought-text">' + esc(t.text) + '</div>' +
-          (t.availability ? availBadge(t.availability) : '') +
-          '<button class="btn-delete" onclick="deleteThought(\'' + t.id + '\')" title="Remove">✕</button>' +
+        var baseName  = esc(t.text.trim().replace(/\..*$/, '').split(/\s+/)[0]);
+        var shortDate = t.date ? t.date.replace(/,\s*\d{4}.*$/, '').trim() : '';
+        return '<div class="domain-line">' +
+          '<span class="domain-base">' + baseName + '</span>' +
+          '<span class="domain-avails">' + formatDomainAvails(t.availability) + '</span>' +
+          '<span class="domain-line-date">' + esc(shortDate) + '</span>' +
+          '<button class="domain-del" onclick="deleteThought(\'' + t.id + '\')" title="Remove">✕</button>' +
           '</div>';
       }).join('');
     }
 
+    var n = visible.length;
     document.getElementById('stats-bar').textContent =
-      thoughts.length + ' thought' + (thoughts.length !== 1 ? 's' : '') + ' saved total';
+      n + ' domain name' + (n !== 1 ? 's' : '') + ' checked';
   }
 
   // ── Helpers ───────────────────────────────────────────────────
@@ -484,9 +538,17 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
 
-  function availBadge(a) {
-    var cls = a.indexOf('✅') !== -1 ? '' : a.indexOf('❌') !== -1 ? ' taken' : ' unknown';
-    return '<div class="thought-avail' + cls + '">' + esc(a) + '</div>';
+  function formatDomainAvails(avail) {
+    if (!avail) return '<span class="avail-pill chk">⏳ checking…</span>';
+    return avail.split('|').map(function(p) {
+      p = p.trim(); if (!p) return '';
+      var icon = p.charAt(0);
+      var domain = p.replace(/^[✅❌⚠️]\s*/, '').trim();
+      var dot = domain.indexOf('.');
+      var tld = dot !== -1 ? domain.slice(dot) : domain;
+      var cls = icon === '✅' ? 'yes' : icon === '❌' ? 'no' : 'unk';
+      return '<span class="avail-pill ' + cls + '">' + icon + ' ' + tld + '</span>';
+    }).filter(Boolean).join('');
   }
   function cacheLocally() {
     try { localStorage.setItem('llThoughtsCache', JSON.stringify(thoughts)); } catch(e) {}

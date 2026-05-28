@@ -105,17 +105,39 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// ── Auto-tag ideas when no category is provided ──────────────
+// Called when user saves an "Idea" (no manual category chosen).
+// Uses simple keyword matching — keeps things fast and free.
+function autoTag_(text) {
+  var t = text.toLowerCase();
+  if (/\b(legal|trademark|copyright|register|licen[sc]e|solicitor|lawyer|contract|gdpr|privacy policy|terms)\b/.test(t)) {
+    return '⚖️ Legal';
+  }
+  if (/\b(website|web site|web page|homepage|page design|feature|button|colour|color|font|logo|layout)\b/.test(t)) {
+    return '💭 Website Ideas';
+  }
+  if (/\b(check|verify|look into|research|find out|need to know|investigate|confirm|ask)\b/.test(t)) {
+    return '🔍 Things to Check';
+  }
+  if (/\b(yes or no|go or no|should we|do we|will we|decide|decision)\b/.test(t)) {
+    return '✅ Go/No-Go';
+  }
+  return '💡 Other Ideas';
+}
+
 // ── Called when a thought is added or deleted ──
 function doPost(e) {
   var body  = JSON.parse(e.postData.contents);
   var sheet = getOrCreateSheet_();
 
   if (body.action === 'add') {
+    // Auto-tag if no category was set (user used "Idea" mode)
+    var cat = body.cat || autoTag_(body.text);
     var availability = '';
-    if (body.cat === '🌐 Domain Names') {
+    if (cat === '🌐 Domain Names') {
       availability = checkDomainAvailability_(body.text);
     }
-    sheet.appendRow([body.id, body.cat, body.text, body.date, availability]);
+    sheet.appendRow([body.id, cat, body.text, body.date, availability]);
 
   } else if (body.action === 'delete') {
     var rows = sheet.getDataRange().getValues();
