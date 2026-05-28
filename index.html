@@ -233,9 +233,63 @@
       main { margin: 20px auto; }
       .add-card { padding: 20px; }
     }
+
+    /* ── Password gate ── */
+    #pwd-gate {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, #fdf0e8 0%, #f5e6f8 100%);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .pwd-box {
+      background: white;
+      border-radius: 20px;
+      padding: 48px 40px;
+      box-shadow: 0 8px 40px rgba(180,100,150,0.18);
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+    }
+    .pwd-box .paw { font-size: 3rem; display: block; margin-bottom: 12px; }
+    .pwd-box h2 { font-size: 1.5rem; color: #3a2e28; margin-bottom: 6px; }
+    .pwd-box p  { font-size: 0.95rem; color: #a08070; margin-bottom: 24px; }
+    .pwd-box input {
+      width: 100%; padding: 14px 18px; font-size: 1.1rem;
+      border: 2px solid #e8d5c8; border-radius: 10px;
+      text-align: center; letter-spacing: 2px;
+      font-family: inherit; color: #3a2e28;
+      margin-bottom: 14px; outline: none;
+    }
+    .pwd-box input:focus { border-color: #e67e22; }
+    .pwd-box .btn-enter {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #c0392b, #e67e22);
+      color: white; border: none; border-radius: 10px;
+      font-size: 1.1rem; font-family: inherit; cursor: pointer;
+    }
+    .pwd-box .btn-enter:hover { opacity: 0.9; }
+    .pwd-error { color: #c0392b; font-size: 0.9rem; margin-top: 10px; display: none; }
+
+    #app { display: none; }
   </style>
 </head>
 <body>
+
+<!-- Password gate -->
+<div id="pwd-gate">
+  <div class="pwd-box">
+    <span class="paw">🐾</span>
+    <h2>Lily &amp; Lulu Pet Club</h2>
+    <p>Enter your password to continue</p>
+    <input type="password" id="pwd-input" placeholder="Password"
+           onkeydown="if(event.key==='Enter')checkPwd()" />
+    <button class="btn-enter" onclick="checkPwd()">Enter →</button>
+    <p class="pwd-error" id="pwd-error">Incorrect password. Try again.</p>
+  </div>
+</div>
+
+<!-- Main app (hidden until password is entered) -->
+<div id="app">
 
 <header>
   <div class="paw">🐾</div>
@@ -272,16 +326,7 @@
     <input type="text" id="search-input" placeholder="Search your thoughts…" oninput="renderList()" />
   </div>
 
-  <div class="filter-row">
-    <span>Show:</span>
-    <button class="filter-btn active" data-filter="All"               onclick="setFilter(this)">All</button>
-    <button class="filter-btn" data-filter="🌐 Domain Names"         onclick="setFilter(this)">🌐 Domains</button>
-    <button class="filter-btn" data-filter="💭 Website Ideas"        onclick="setFilter(this)">💭 Website</button>
-    <button class="filter-btn" data-filter="🔍 Things to Check"      onclick="setFilter(this)">🔍 To Check</button>
-    <button class="filter-btn" data-filter="✅ Go/No-Go"             onclick="setFilter(this)">✅ Go/No-Go</button>
-    <button class="filter-btn" data-filter="⚖️ Legal"               onclick="setFilter(this)">⚖️ Legal</button>
-    <button class="filter-btn" data-filter="💡 Other Ideas"          onclick="setFilter(this)">💡 Other</button>
-  </div>
+  <!-- Filter row hidden: only Domain Names are shown publicly -->
 
   <div id="thoughts-list">
     <div class="loading"><div class="spinner"></div><br>Loading your thoughts…</div>
@@ -290,6 +335,8 @@
 </main>
 
 <div id="toast"></div>
+
+</div><!-- /#app -->
 
 <script>
   // ── CONFIGURATION ────────────────────────────────────────────
@@ -407,8 +454,9 @@
   function renderList() {
     var query   = (document.getElementById('search-input').value || '').toLowerCase();
     var visible = thoughts.slice();
-    if (activeFilter !== 'All') visible = visible.filter(function(t) { return t.cat === activeFilter; });
-    if (query) visible = visible.filter(function(t) { return t.text.toLowerCase().includes(query) || t.cat.toLowerCase().includes(query); });
+    // Only show Domain Names publicly — all other categories are private
+    visible = visible.filter(function(t) { return t.cat === '🌐 Domain Names'; });
+    if (query) visible = visible.filter(function(t) { return t.text.toLowerCase().includes(query); });
 
     var list = document.getElementById('thoughts-list');
 
@@ -465,6 +513,28 @@
       if (e.key === 'Enter' && e.ctrlKey) addThought();
     });
   });
+
+  // ── Password gate ─────────────────────────────────────────────
+  (function() {
+    var STORED = atob('TGlseUx1bHUyMDI2'); // LilyLulu2026
+    function unlock() {
+      document.getElementById('pwd-gate').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+    }
+    if (sessionStorage.getItem('llAuth') === '1') unlock();
+    window.checkPwd = function() {
+      var val = document.getElementById('pwd-input').value;
+      if (val === STORED) {
+        sessionStorage.setItem('llAuth', '1');
+        unlock();
+      } else {
+        var err = document.getElementById('pwd-error');
+        err.style.display = 'block';
+        document.getElementById('pwd-input').value = '';
+        document.getElementById('pwd-input').focus();
+      }
+    };
+  })();
 </script>
 </body>
 </html>

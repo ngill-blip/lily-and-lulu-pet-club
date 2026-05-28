@@ -4,14 +4,24 @@
 //  deploy it as a Web App (instructions in the guide).
 // ============================================================
 
+// ⚠️  IMPORTANT — MASTERLIST PROTECTION ⚠️
+// The Google Sheet (stored in Script Properties as 'SS_ID') is the
+// permanent masterlist of all thoughts and domain checks.
+// NEVER delete or replace this spreadsheet.
+// This function ONLY creates the sheet if it does not already exist —
+// it will NEVER overwrite, clear, or delete any existing data.
+// If you need to update the script: deploy a new version, do NOT
+// change the SS_ID property or delete the 'Thoughts' sheet.
 function getOrCreateSheet_() {
   var props = PropertiesService.getScriptProperties();
   var ssId  = props.getProperty('SS_ID');
   var ss, sheet;
 
   if (ssId) {
+    // ✅ Masterlist spreadsheet already exists — open it safely
     ss = SpreadsheetApp.openById(ssId);
   } else {
+    // First-run only: create the spreadsheet once and store its ID
     ss    = SpreadsheetApp.create('🐾 Lily & Lulu — Thoughts Log');
     ssId  = ss.getId();
     props.setProperty('SS_ID', ssId);
@@ -23,6 +33,8 @@ function getOrCreateSheet_() {
 
   sheet = ss.getSheetByName('Thoughts');
   if (!sheet) {
+    // Safety net: if the tab was accidentally deleted, recreate it
+    // (the spreadsheet itself and all other data are untouched)
     sheet = ss.insertSheet('Thoughts');
     sheet.appendRow(['id', 'category', 'text', 'date', 'availability']);
     sheet.setFrozenRows(1);
@@ -32,33 +44,41 @@ function getOrCreateSheet_() {
 
 // ── Domain availability check ─────────────────────────────────
 // Uses the free RDAP standard — no API key needed.
-// HTTP 200 = domain is registered (taken). 404 = likely available.
-function checkDomainAvailability_(rawText) {
-  var domain = rawText.trim().toLowerCase();
-  domain = domain.replace(/^https?:\/\//i, '');   // strip http://
-  domain = domain.replace(/^www\./i, '');           // strip www.
-  domain = domain.split(/[\s\/]+/)[0];              // first word only
-  domain = domain.replace(/[^a-z0-9.\-]/g, '');    // clean characters
-
-  if (domain.indexOf('.') === -1) {
-    return '⚠️ Include a TLD to check (e.g. lilyandlulu.com)';
-  }
-
+// If no TLD is given, automatically tries .com .net .org .co .pet
+function checkOneDomain_(domain) {
   try {
     var resp = UrlFetchApp.fetch('https://rdap.org/domain/' + domain, {
       muteHttpExceptions: true
     });
     var code = resp.getResponseCode();
-    if (code === 200) {
-      return '❌ Taken — ' + domain;
-    } else if (code === 404) {
-      return '✅ Available — ' + domain;
-    } else {
-      return '⚠️ Could not check (code ' + code + ')';
-    }
+    if (code === 200) return '❌ ' + domain;
+    if (code === 404) return '✅ ' + domain;
+    return '⚠️ ' + domain;
   } catch (e) {
-    return '⚠️ Check failed: ' + e.message;
+    return '⚠️ ' + domain;
   }
+}
+
+function checkDomainAvailability_(rawText) {
+  // Extract first word-like token, strip URL parts
+  var base = rawText.trim().toLowerCase();
+  base = base.replace(/^https?:\/\//i, '');
+  base = base.replace(/^www\./i, '');
+  base = base.split(/[\s,\/]+/)[0];          // first word before space or comma
+  base = base.replace(/[^a-z0-9.\-]/g, '');
+
+  // If it already has a TLD (contains a dot), check just that one
+  if (base.indexOf('.') !== -1) {
+    return checkOneDomain_(base);
+  }
+
+  // No TLD — automatically check the most common ones
+  var tlds = ['.com', '.net', '.org', '.co', '.pet'];
+  var results = [];
+  for (var i = 0; i < tlds.length; i++) {
+    results.push(checkOneDomain_(base + tlds[i]));
+  }
+  return results.join('  |  ');
 }
 
 // ── Called when the website loads — returns all saved thoughts ──
