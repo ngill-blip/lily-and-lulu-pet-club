@@ -542,11 +542,22 @@
     if (!avail) return '<span class="avail-pill chk">⏳ checking…</span>';
     return avail.split('|').map(function(p) {
       p = p.trim(); if (!p) return '';
-      var icon = p.charAt(0);
-      var domain = p.replace(/^[✅❌⚠️]\s*/, '').trim();
+      var upper = p.toUpperCase();
+      var cls, icon;
+
+      // Handle both emoji format (✅ petzlily.com) and text format (AVAILABLE: petzlily.com)
+      var isAvail = p.indexOf('✅') !== -1 ||
+                    (upper.indexOf('AVAILABLE') !== -1 && upper.indexOf('POSSIBLY') === -1);
+      var isTaken = p.indexOf('❌') !== -1 || upper.indexOf('TAKEN') !== -1;
+
+      if (isAvail)      { cls = 'yes'; icon = '✅'; }
+      else if (isTaken) { cls = 'no';  icon = '❌'; }
+      else              { cls = 'unk'; icon = '⚠️'; }
+
+      // Strip emoji and "KEYWORD: " prefixes to extract the domain
+      var domain = p.replace(/✅|❌|⚠️/g, '').replace(/^[A-Z][^:]*:\s*/i, '').trim();
       var dot = domain.indexOf('.');
       var tld = dot !== -1 ? domain.slice(dot) : domain;
-      var cls = icon === '✅' ? 'yes' : icon === '❌' ? 'no' : 'unk';
       return '<span class="avail-pill ' + cls + '">' + icon + ' ' + tld + '</span>';
     }).filter(Boolean).join('');
   }
