@@ -75,7 +75,20 @@
       gap: 0.5rem;
     }
 
-    /* ── Domain table ── */
+    /* ── Domain group label ── */
+    .domain-group-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #b39ddb;
+      margin: 1.2rem 0 0.5rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid #f0e8f8;
+    }
+    .domain-group-label:first-of-type { margin-top: 0; }
+
+    /* ── Domain items ── */
     .domain-item {
       display: flex;
       align-items: flex-start;
@@ -87,7 +100,7 @@
     .domain-name {
       font-weight: 700;
       font-size: 1rem;
-      min-width: 120px;
+      color: #5a3060;
     }
     .avail-list { flex: 1; }
     .avail-tag {
@@ -98,15 +111,42 @@
       padding: 0.15rem 0.6rem;
       margin: 0.1rem 0.15rem;
     }
-    .avail-tag.yes { background: #e8f5e9; color: #2e7d32; }
-    .avail-tag.no  { background: #fce4ec; color: #c62828; }
-    .avail-tag.unk { background: #f3e5f5; color: #6a1b9a; }
+    .avail-tag.yes  { background: #e8f5e9; color: #2e7d32; }
+    .avail-tag.no   { background: #fce4ec; color: #c62828; }
+    .avail-tag.unk  { background: #f3e5f5; color: #6a1b9a; }
+    .avail-tag.prem { background: #fff3e0; color: #e65100; }
     .domain-note {
       font-size: 0.85rem;
       color: #8d6e8d;
       margin-top: 0.3rem;
       font-style: italic;
     }
+
+    /* ── Star badge ── */
+    .star-pick {
+      display: inline-block;
+      background: linear-gradient(135deg, #f5a7c7, #c9a7f5);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 800;
+      border-radius: 20px;
+      padding: 0.15rem 0.7rem;
+      margin-left: 0.4rem;
+      vertical-align: middle;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Callout box ── */
+    .callout {
+      background: #f3e8ff;
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #5a3060;
+      line-height: 1.5;
+    }
+    .callout strong { color: #8e3faa; }
 
     /* ── Highlights ── */
     .highlights {
@@ -156,64 +196,167 @@
     <span class="paw">🐾</span>
     <h1>Lily &amp; Lulu Pet Club</h1>
     <div class="subtitle">Weekly Synthesis</div>
-    <div class="week-badge">Week of 19 – 25 May 2026</div>
+    <div class="week-badge">Week of 26 – 30 May 2026</div>
   </div>
 
   <!-- Domain Names -->
   <div class="section">
-    <div class="section-title">🌐 Domain Name Ideas</div>
+    <div class="section-title">🌐 Domain Names — Full Research Results</div>
+
+    <div class="domain-group-label">Lily &amp; Lulu Names</div>
 
     <div class="domain-item">
       <div>
-        <div class="domain-name">petzlily</div>
+        <div class="domain-name">lilyandlulu <span class="star-pick">⭐ Top Pick</span></div>
         <div class="avail-list">
-          <span class="avail-tag yes">✅ petzlily.com</span>
-          <span class="avail-tag yes">✅ petzlily.net</span>
-          <span class="avail-tag yes">✅ petzlily.org</span>
-          <span class="avail-tag yes">✅ petzlily.co</span>
-          <span class="avail-tag yes">✅ petzlily.pet</span>
+          <span class="avail-tag yes">✅ .com</span>
+          <span class="avail-tag yes">✅ .net</span>
+          <span class="avail-tag yes">✅ .org</span>
         </div>
-        <div class="domain-note">⭐ Best option so far — all five TLDs are available. "Lily" makes it personal and warm, perfect for your brand.</div>
+        <div class="domain-note">The brand name itself — and all three main TLDs are free. This is a rare find. If the business stays as "Lily and Lulu Pet Club", this is the domain to grab.</div>
       </div>
     </div>
 
     <div class="domain-item">
       <div>
-        <div class="domain-name">Petzintell</div>
+        <div class="domain-name">lulufriend</div>
         <div class="avail-list">
-          <span class="avail-tag unk">⏳ Not yet checked</span>
+          <span class="avail-tag yes">✅ .com</span>
+          <span class="avail-tag yes">✅ .net</span>
+          <span class="avail-tag yes">✅ .org</span>
         </div>
-        <div class="domain-note">Worth checking! "Intelligence" meets "Petz" — could work if the business has an advice or expert angle.</div>
+        <div class="domain-note">Warm and friendly — feels like a pet companion brand. Good backup if "lilyandlulu" ever gets taken.</div>
       </div>
     </div>
 
     <div class="domain-item">
       <div>
-        <div class="domain-name">Petzwise</div>
+        <div class="domain-name">lilylulu</div>
         <div class="avail-list">
-          <span class="avail-tag unk">⏳ Not yet checked</span>
+          <span class="avail-tag no">❌ .com taken</span>
+          <span class="avail-tag yes">✅ .net</span>
+          <span class="avail-tag yes">✅ .org</span>
         </div>
-        <div class="domain-note">Lovely name — "wise" feels trustworthy and friendly. Definitely check availability next week.</div>
+        <div class="domain-note">The .com is gone — a shame, because it's a natural name. The .net is free but for a business, .com is always the gold standard.</div>
       </div>
     </div>
 
     <div class="domain-item">
       <div>
-        <div class="domain-name">lilyandlulu</div>
+        <div class="domain-name">lulutime</div>
         <div class="avail-list">
-          <span class="avail-tag unk">⏳ Re-check needed</span>
+          <span class="avail-tag prem">🔶 .com Premium</span>
+          <span class="avail-tag yes">✅ .net</span>
+          <span class="avail-tag yes">✅ .org</span>
         </div>
-        <div class="domain-note">The brand name itself — worth a proper check. The domain system was still being set up when this was logged.</div>
+        <div class="domain-note">The .com is held speculatively at a premium price. Skip it — there are better free options available right now.</div>
       </div>
     </div>
 
-    <p class="note">💡 Tip: Next time you're on the site, type just the name without .com — the system now checks .com, .net, .org, .co and .pet automatically!</p>
+    <div class="domain-group-label">Petz Names</div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">petzhood <span class="star-pick">⭐ Top Pick</span></div>
+        <div class="avail-list">
+          <span class="avail-tag yes">✅ .com</span>
+          <span class="avail-tag yes">✅ .net</span>
+          <span class="avail-tag yes">✅ .org</span>
+        </div>
+        <div class="domain-note">Short, snappy, and memorable. "Hood" suggests community — perfect for a pet club. All TLDs available!</div>
+      </div>
+    </div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">petztogether</div>
+        <div class="avail-list">
+          <span class="avail-tag yes">✅ .com</span>
+          <span class="avail-tag yes">✅ .net</span>
+          <span class="avail-tag yes">✅ .org</span>
+        </div>
+        <div class="domain-note">Has a community and togetherness angle that works beautifully for a pet club. A lovely warm option.</div>
+      </div>
+    </div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">petzunity / petzorama</div>
+        <div class="avail-list">
+          <span class="avail-tag yes">✅ .com</span>
+          <span class="avail-tag yes">✅ .net</span>
+          <span class="avail-tag yes">✅ .org</span>
+        </div>
+        <div class="domain-note">Both fully available. "Petzunity" is community-focused; "Petzorama" is fun and expressive — great if you lean into lifestyle content.</div>
+      </div>
+    </div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">petz2gether / pet2gether</div>
+        <div class="avail-list">
+          <span class="avail-tag yes">✅ .com</span>
+          <span class="avail-tag yes">✅ .net</span>
+          <span class="avail-tag yes">✅ .org</span>
+        </div>
+        <div class="domain-note">Both available. The "2" instead of "to" feels informal — fun on social media, but could look casual on a business card. Worth considering.</div>
+      </div>
+    </div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">petzo / petzfam / petzgroup / petzfriends</div>
+        <div class="avail-list">
+          <span class="avail-tag no">❌ .com taken</span>
+          <span class="avail-tag yes">✅ .net/.org mostly available</span>
+        </div>
+        <div class="domain-note">The .com versions of these are gone. Cross them off the main list — without .com, these lose some of their punch as a brand.</div>
+      </div>
+    </div>
+
+    <div class="domain-group-label">Doodle Names</div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">doodleydoo</div>
+        <div class="avail-list">
+          <span class="avail-tag yes">✅ .com</span>
+          <span class="avail-tag yes">✅ .net</span>
+          <span class="avail-tag yes">✅ .org</span>
+        </div>
+        <div class="domain-note">Playful and very memorable! If the business leans into the doodle dog side of things, this is charming and highly brandable.</div>
+      </div>
+    </div>
+
+    <div class="domain-item">
+      <div>
+        <div class="domain-name">twodoodles / doodledo / twotails</div>
+        <div class="avail-list">
+          <span class="avail-tag no">❌ .com taken</span>
+          <span class="avail-tag yes">✅ .net/.org partly available</span>
+        </div>
+        <div class="domain-note">"twotails" is fully taken across all TLDs — let it go. "twodoodles" and "doodledo" .com are gone too. Lovely names, but the .com gap is a real obstacle for a consumer brand.</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>💡 The shortlist to act on:</strong> You've done thorough research across 20+ names. The standout options with .com available are <strong>lilyandlulu.com</strong>, <strong>petzhood.com</strong>, <strong>petztogether.com</strong>, <strong>doodleydoo.com</strong>, and <strong>lulufriend.com</strong>. Don't wait too long — domain names can be snapped up anytime!
+    </div>
   </div>
 
-  <!-- Other Ideas -->
-  <div class="section green">
-    <div class="section-title">💡 Other Ideas</div>
-    <p>Early-stage brainstorming is underway. The "test" entry from this week marks the very first thought saved to the system — a milestone! Now that everything is working, next week's log should start filling up with the real ideas.</p>
+  <!-- Things to Check -->
+  <div class="section orange">
+    <div class="section-title">🔍 Things to Check</div>
+    <p>A few names from earlier in the month haven't been fully checked yet:</p>
+    <br>
+    <p>• <strong>Petzwise</strong> — Check .com availability. "Wise" feels trustworthy and expert — a strong brand angle if you want to position the club as a go-to resource.</p>
+    <br>
+    <p>• <strong>Petzintell</strong> — Worth a check too. If the club has an "advice" or "expert tips" component, this could stand out from competitors.</p>
+    <br>
+    <p>• <strong>Petzlily.com</strong> — Confirmed available last week across five TLDs (.com, .net, .org, .co, .pet). Combines your name personally with "petz" — a unique personal touch.</p>
+    <div class="callout" style="background: #fff8ee; color: #7a4e1c; margin-top: 0.8rem;">
+      <strong>Suggested next step:</strong> Open the Thoughts Log, type each name into the domain checker, and jot down the results. Then you'll have a complete shortlist to choose from!
+    </div>
   </div>
 
   <!-- Highlights -->
@@ -221,28 +364,28 @@
     <div class="section-title">✨ This Week's Highlights</div>
 
     <div class="highlight-item">
-      <span class="highlight-dot">🚀</span>
-      <span class="highlight-text"><strong>The Thoughts Log is live!</strong> The website is up at GitHub Pages and saving ideas to Google Sheets. This is the foundation everything else will be built on — a huge step.</span>
-    </div>
-
-    <div class="highlight-item">
       <span class="highlight-dot">🌐</span>
-      <span class="highlight-text"><strong>Domain checking works end-to-end.</strong> Type a name idea and the system automatically checks availability across five extensions. <em>petzlily</em> is available on all of them — that's worth noting.</span>
+      <span class="highlight-text"><strong>You've done a proper domain sweep.</strong> Checking over 20 names across .com, .net, and .org is real research — and now you have a clear picture of what's open and what's gone.</span>
     </div>
 
     <div class="highlight-item">
       <span class="highlight-dot">⭐</span>
-      <span class="highlight-text"><strong>Strong early name candidates.</strong> You've already surfaced three genuinely interesting options: <em>petzlily</em> (personal and warm), <em>petzwise</em> (trustworthy), and <em>petzintell</em> (expert-feeling). Good instincts!</span>
+      <span class="highlight-text"><strong>lilyandlulu.com is available — and that's a big deal.</strong> The actual brand name, all main TLDs still free. If you're committed to the "Lily and Lulu" identity, registering this should be near the top of your list.</span>
     </div>
 
     <div class="highlight-item">
-      <span class="highlight-dot">📋</span>
-      <span class="highlight-text"><strong>Next step: keep logging.</strong> The system is ready — the more you use it, the more useful this weekly summary becomes. Jot down anything: website ideas, things to research, yes/no decisions, legal questions.</span>
+      <span class="highlight-dot">🐾</span>
+      <span class="highlight-text"><strong>petzhood.com is the community pick.</strong> Short, memorable, community-feeling, and fully available. A great option if you want something a little more neutral than your personal name.</span>
     </div>
 
     <div class="highlight-item">
-      <span class="highlight-dot">💜</span>
-      <span class="highlight-text"><strong>What a first week.</strong> You've gone from idea to a working website with a backend, domain checking, and a weekly review system. That's more than most people ever do. Onwards!</span>
+      <span class="highlight-dot">✂️</span>
+      <span class="highlight-text"><strong>twotails, doodledo, and lilylulu.com — all gone.</strong> Good to have this confirmed! Cross them off and focus energy on the wide-open options you do have.</span>
+    </div>
+
+    <div class="highlight-item">
+      <span class="highlight-dot">🗺️</span>
+      <span class="highlight-text"><strong>Next milestone: pick a name and register it.</strong> You have a solid shortlist. The best move now is to pick your top three, sleep on it for a day or two, and then register the winner. Once the domain is yours, everything else falls into place much more easily.</span>
     </div>
   </div>
 
