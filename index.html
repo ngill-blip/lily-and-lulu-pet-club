@@ -399,7 +399,7 @@
     var input = document.getElementById('thought-input');
     var btn   = document.getElementById('save-btn');
     if (mode === 'domain') {
-      input.placeholder = 'Type a domain name to check (e.g. petzlily or petzlily.com)…';
+      input.placeholder = 'Type one or more names, separated by commas (e.g. petzlily, petzhood, petzy)…';
       btn.textContent   = 'Check Availability 🔍';
     } else {
       input.placeholder = 'Write any idea, question, or thought…';
@@ -457,21 +457,34 @@
       hour:'2-digit', minute:'2-digit'
     });
 
-    fetch(API_URL, {
-      method:  'POST',
-      body:    JSON.stringify({ action: 'add', id: String(Date.now()), cat: cat, text: text, date: nowDate }),
-      headers: { 'Content-Type': 'text/plain' },
-      mode:    'no-cors'
-    })
+    // In domain mode, support comma-separated bulk entry
+    var names = currentMode === 'domain'
+      ? text.split(',').map(function(n){ return n.trim(); }).filter(Boolean)
+      : [text];
+
+    var sends = names.map(function(name) {
+      return fetch(API_URL, {
+        method:  'POST',
+        body:    JSON.stringify({ action: 'add', id: String(Date.now() + Math.random()), cat: cat, text: name, date: nowDate }),
+        headers: { 'Content-Type': 'text/plain' },
+        mode:    'no-cors'
+      });
+    });
+
+    Promise.all(sends)
     .then(function() {
       document.getElementById('thought-input').value = '';
       if (currentMode === 'domain') {
-        // Add optimistically and reload in 5s once availability is checked
-        thoughts.unshift({ id: String(Date.now()), cat: '🌐 Domain Names', text: text, date: nowDate, availability: '' });
+        names.forEach(function(name) {
+          thoughts.unshift({ id: String(Date.now()), cat: '🌐 Domain Names', text: name, date: nowDate, availability: '' });
+        });
         cacheLocally();
         renderList();
-        showToast('Saved! Checking availability… 🔍');
-        setTimeout(function() { loadThoughts(); }, 5000);
+        var msg = names.length > 1
+          ? 'Checking ' + names.length + ' names… 🔍'
+          : 'Saved! Checking availability… 🔍';
+        showToast(msg);
+        setTimeout(function() { loadThoughts(); }, 6000);
       } else {
         showToast('Idea saved! 💭');
       }
@@ -480,6 +493,7 @@
       showToast('⚠️ Not saved — check your connection');
     })
     .finally(function() {
+      btn.disabled = false;
       btn.disabled = false;
       btn.textContent = currentMode === 'domain' ? 'Check Availability 🔍' : 'Save Idea 💭';
     });
