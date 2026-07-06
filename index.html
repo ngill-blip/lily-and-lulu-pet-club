@@ -5,354 +5,284 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lily &amp; Lulu — Name Checker</title>
   <style>
+    :root {
+      --ink:    #26221f;
+      --muted:  #9a908a;
+      --faint:  #c9beb7;
+      --line:   #ece7e3;
+      --avail:  #1f7a46;
+      --taken:  #b9aca4;
+      --accent: #c0552f;
+      --bg:     #ffffff;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Georgia', serif;
-      background: #fdf6f0;
-      color: #3a2e28;
-      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Header ── */
-    header {
-      background: linear-gradient(135deg, #c0392b 0%, #e67e22 100%);
-      color: white;
-      padding: 26px 40px 22px;
+    .wrap {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 64px 24px 96px;
+    }
+
+    .brand {
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+
+    /* ── Search: single line ── */
+    .search {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
+      border-bottom: 1px solid var(--ink);
+      padding: 10px 2px;
     }
-    header .paw { font-size: 2rem; }
-    header h1   { font-size: 1.6rem; font-weight: normal; letter-spacing: 0.5px; }
-    header p    { font-size: 0.95rem; opacity: 0.9; margin-top: 3px; }
-
-    main {
-      max-width: 900px;
-      margin: 34px auto;
-      padding: 0 24px;
-    }
-
-    /* ── Search bar ── */
-    .search-wrap { position: relative; margin-bottom: 10px; }
-    .search-wrap input {
-      width: 100%;
-      border: 2px solid #e8d5c8;
-      border-radius: 12px;
-      padding: 16px 20px 16px 52px;
-      font-size: 1.15rem;
+    .search svg { flex-shrink: 0; stroke: var(--muted); }
+    .search input {
+      border: none;
+      outline: none;
+      background: transparent;
       font-family: inherit;
-      color: #3a2e28;
-      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23c0392b' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 18px center;
-      transition: border-color 0.2s;
+      font-size: 1.25rem;
+      color: var(--ink);
+      width: 100%;
+      padding: 2px 0;
     }
-    .search-wrap input:focus { outline: none; border-color: #e67e22; }
-    .search-hint { font-size: 0.85rem; color: #a08070; margin: 0 4px 24px; }
+    .search input::placeholder { color: var(--faint); }
 
-    /* ── Column header ── */
-    .col-head {
-      display: flex; align-items: center; gap: 14px;
-      padding: 0 18px 8px;
-      font-size: 0.72rem; font-weight: bold; letter-spacing: 0.6px;
-      text-transform: uppercase; color: #b0938a;
-    }
-    .col-name   { min-width: 120px; }
-    .col-avail  { flex: 1; }
-    .col-fit    { width: 250px; }
-    .col-x      { width: 20px; }
+    .hint { font-size: 0.8rem; color: var(--faint); margin-top: 10px; }
 
-    /* ── Rows ── */
-    #rows { display: flex; flex-direction: column; }
+    /* ── Results ── */
+    #list { margin-top: 44px; }
 
-    .row {
-      display: flex; align-items: center; gap: 14px;
-      padding: 14px 18px;
-      border-bottom: 1px solid #f0e6de;
+    .item {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+      position: relative;
       transition: background 0.12s;
     }
-    .row:hover { background: #f4f4f4; }
+    .item:first-child { border-top: 1px solid var(--line); }
+    .item:hover { background: #faf8f6; }
 
-    .r-name {
-      font-weight: 700; font-size: 1.05rem;
-      min-width: 120px; color: #3a2e28; word-break: break-word;
+    .headline {
+      font-size: 1.15rem;
+      color: var(--ink);
+      letter-spacing: -0.01em;
     }
-    .r-avail { flex: 1; display: flex; flex-wrap: wrap; gap: 5px; }
-    .pill {
-      display: inline-block; font-size: 0.78rem; font-weight: 700;
-      padding: 3px 9px; border-radius: 10px; white-space: nowrap;
-    }
-    .pill.yes { background: #e8f5e9; color: #2e7d32; }
-    .pill.no  { background: #fce4ec; color: #c62828; }
-    .pill.unk { background: #fffbe6; color: #7a5800; }
-    .pill.chk { background: #f3e5f5; color: #6a1b9a; }
+    .headline .dom { font-weight: 600; }
+    .verdict { font-weight: 400; }
+    .verdict.avail { color: var(--avail); }
+    .verdict.taken { color: var(--taken); }
+    .verdict.unk   { color: var(--muted); }
+    .verdict.chk   { color: var(--muted); font-style: italic; }
 
-    .r-fit { width: 250px; display: flex; flex-direction: column; gap: 5px; }
-    .fit-line { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; }
-    .fit-label { color: #8a7268; width: 92px; flex-shrink: 0; }
-    .fit-tag {
-      font-weight: 700; font-size: 0.75rem;
-      padding: 2px 9px; border-radius: 10px; cursor: help;
+    .exts {
+      margin-top: 7px;
+      font-size: 0.92rem;
+      color: var(--muted);
     }
-    .fit-tag.strong { background: #e8f5e9; color: #2e7d32; }
-    .fit-tag.fair   { background: #fff4e5; color: #b26a00; }
-    .fit-tag.weak   { background: #f0eeec; color: #8a7268; }
+    .ext { white-space: nowrap; }
+    .ext.yes { color: var(--avail); }
+    .ext.no  { color: var(--taken); text-decoration: line-through; }
+    .ext.unk { color: var(--muted); }
+    .exts .sep { color: var(--faint); margin: 0 7px; }
 
-    .r-x {
-      width: 20px; flex-shrink: 0;
+    .fit {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: var(--faint);
+      letter-spacing: 0.02em;
+    }
+    .fit b { font-weight: 600; color: var(--muted); }
+
+    .del {
+      position: absolute;
+      top: 20px; right: 0;
       background: none; border: none; cursor: pointer;
-      color: #c9b5ad; font-size: 1.1rem; line-height: 1; transition: color 0.15s;
+      color: var(--faint); font-size: 1rem; line-height: 1;
+      opacity: 0; transition: opacity 0.15s, color 0.15s;
     }
-    .r-x:hover { color: #e74c3c; }
+    .item:hover .del { opacity: 1; }
+    .del:hover { color: var(--accent); }
 
-    /* ── States ── */
-    .empty, .loading { text-align: center; padding: 60px 20px; color: #b0938a; }
-    .empty .icon { font-size: 3rem; margin-bottom: 14px; }
-    .spinner {
-      display: inline-block; width: 34px; height: 34px;
-      border: 4px solid #f3e0d8; border-top-color: #e67e22;
-      border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .stats { text-align: center; font-size: 0.85rem; color: #a08070; margin: 28px 0 50px; }
+    .empty { margin-top: 60px; text-align: center; color: var(--faint); font-size: 1rem; }
 
     #toast {
       position: fixed; bottom: 28px; left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: #27ae60; color: white; padding: 11px 26px;
-      border-radius: 30px; font-size: 0.98rem;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-      transition: transform 0.3s ease; pointer-events: none; z-index: 999;
+      background: var(--ink); color: #fff; padding: 10px 22px;
+      border-radius: 30px; font-size: 0.9rem;
+      transition: transform 0.3s ease; pointer-events: none; z-index: 99;
     }
     #toast.show { transform: translateX(-50%) translateY(0); }
-
-    @media (max-width: 640px) {
-      header { padding: 18px 20px; }
-      header h1 { font-size: 1.3rem; }
-      main { margin: 20px auto; }
-      .col-fit, .r-fit { width: 160px; }
-      .col-head { display: none; }
-    }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="paw">🐾</div>
-  <div>
-    <h1>Lily &amp; Lulu — Name Checker</h1>
-    <p>Search a name to check domain availability &amp; brand fit</p>
-  </div>
-</header>
+<div class="wrap">
+  <div class="brand">Lily &amp; Lulu · Name Checker</div>
 
-<main>
-  <div class="search-wrap">
-    <input type="text" id="name-input"
-           placeholder="Type a name and press Enter (e.g. petparish, pawcircle)…"
-           autocomplete="off"
+  <div class="search">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="name-input" autocomplete="off"
+           placeholder="Search a name…"
            onkeydown="if(event.key==='Enter')runSearch()" />
   </div>
-  <p class="search-hint">Checks .com · .net · .org · .co · .pet. Separate several names with commas to check them all at once.</p>
+  <p class="hint">Press Enter to check .com · .net · .org · .co · .pet. Commas check several at once.</p>
 
-  <div class="col-head">
-    <span class="col-name">Name</span>
-    <span class="col-avail">Availability</span>
-    <span class="col-fit">Brand fit</span>
-    <span class="col-x"></span>
-  </div>
-
-  <div id="rows">
-    <div class="loading"><div class="spinner"></div><br>Loading…</div>
-  </div>
-
-  <p class="stats" id="stats"></p>
-</main>
+  <div id="list"></div>
+</div>
 
 <div id="toast"></div>
 
 <script>
-  // ── Backend (existing Apps Script Web App) ──────────────────────
   const API_URL = 'https://script.google.com/macros/s/AKfycbyCitDPQfwwT689IDhRvQuoaEsK7-7O1ZEuYhhvZBRPCf76dpbq54Ad0LQ54Vk7-158/exec';
 
-  let items = [];            // [{id, text, date, availability}]
-  const pending = new Set(); // lowercased names still awaiting availability
+  let items = [];
+  const pending = new Set();
 
-  // ── Load existing checks on open ────────────────────────────────
   window.addEventListener('DOMContentLoaded', loadItems);
 
   function loadItems() {
     fetch(API_URL)
       .then(function(r){ return r.json(); })
       .then(function(data){
-        if (data.ok) {
-          items = (data.thoughts || []).filter(function(t){ return t.cat === '🌐 Domain Names'; });
-          render();
-        } else { render(); }
+        items = data.ok ? (data.thoughts || []).filter(function(t){ return t.cat === '🌐 Domain Names'; }) : [];
+        render();
       })
-      .catch(function(){ render(); });
+      .catch(render);
   }
 
-  // ── Search / check a name (or comma-separated names) ────────────
   function runSearch() {
     var input = document.getElementById('name-input');
     var raw = input.value.trim();
     if (!raw) { input.focus(); return; }
-
     var names = raw.split(/[,\n]/).map(function(n){ return n.trim(); }).filter(Boolean);
     input.value = '';
 
-    var nowDate = new Date().toLocaleDateString('en-US', {
-      weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'
-    });
+    var nowDate = new Date().toLocaleDateString('en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
 
     names.forEach(function(name){
       var id = String(Date.now() + Math.random());
-      // optimistic row
-      items.unshift({ id: id, text: name, date: nowDate, availability: '' });
+      items.unshift({ id:id, text:name, date:nowDate, availability:'' });
       pending.add(name.toLowerCase());
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action:'add', id:id, cat:'🌐 Domain Names', text:name, date:nowDate }),
-        headers: { 'Content-Type':'text/plain' },
-        mode: 'no-cors'
-      });
+      fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'add', id:id, cat:'🌐 Domain Names', text:name, date:nowDate }), headers:{ 'Content-Type':'text/plain' }, mode:'no-cors' });
     });
-
     render();
-    showToast(names.length > 1 ? 'Checking ' + names.length + ' names… 🔍' : 'Checking availability… 🔍');
+    showToast(names.length > 1 ? 'Checking ' + names.length + ' names…' : 'Checking availability…');
     poll(0);
   }
 
-  // ── Poll backend until availability comes back ──────────────────
   function poll(tries) {
     if (pending.size === 0 || tries > 6) return;
     setTimeout(function(){
-      fetch(API_URL)
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-          if (data.ok) {
-            var fresh = (data.thoughts || []).filter(function(t){ return t.cat === '🌐 Domain Names'; });
-            // merge availability into our items by matching name+missing avail
-            fresh.forEach(function(f){
-              var key = String(f.text || '').toLowerCase();
-              if (f.availability && pending.has(key)) {
-                var mine = items.find(function(m){ return m.text.toLowerCase() === key && !m.availability; });
-                if (mine) { mine.availability = f.availability; mine.id = f.id; }
-                pending.delete(key);
-              }
-            });
-            render();
-          }
-          poll(tries + 1);
-        })
-        .catch(function(){ poll(tries + 1); });
+      fetch(API_URL).then(function(r){ return r.json(); }).then(function(data){
+        if (data.ok) {
+          (data.thoughts || []).filter(function(t){ return t.cat === '🌐 Domain Names'; }).forEach(function(f){
+            var key = String(f.text || '').toLowerCase();
+            if (f.availability && pending.has(key)) {
+              var mine = items.find(function(m){ return m.text.toLowerCase() === key && !m.availability; });
+              if (mine) { mine.availability = f.availability; mine.id = f.id; }
+              pending.delete(key);
+            }
+          });
+          render();
+        }
+        poll(tries + 1);
+      }).catch(function(){ poll(tries + 1); });
     }, 2600);
   }
 
-  // ── Delete a row ────────────────────────────────────────────────
   function removeItem(id) {
-    fetch(API_URL, {
-      method:'POST',
-      body: JSON.stringify({ action:'delete', id:id }),
-      headers: { 'Content-Type':'text/plain' },
-      mode:'no-cors'
-    });
+    fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'delete', id:id }), headers:{ 'Content-Type':'text/plain' }, mode:'no-cors' });
     items = items.filter(function(t){ return t.id !== id; });
     render();
   }
 
-  // ── Render rows ─────────────────────────────────────────────────
-  function render() {
-    var box = document.getElementById('rows');
-    if (items.length === 0) {
-      box.innerHTML = '<div class="empty"><div class="icon">🐾</div><p>No names checked yet — type one above to begin.</p></div>';
-      document.getElementById('stats').textContent = '';
-      return;
-    }
-    box.innerHTML = items.map(function(t){
-      var base = esc(String(t.text).trim().split(/\s+/)[0].replace(/\..*$/, ''));
-      var shortDate = t.date ? esc(String(t.date).replace(/,\s*\d{4}.*$/, '').trim()) : '';
-      var fit = brandFit(base);
-      return '<div class="row">' +
-        '<span class="r-name">' + base + '</span>' +
-        '<span class="r-avail">' + formatAvail(t.availability) + '</span>' +
-        '<span class="r-fit">' +
-          '<span class="fit-line"><span class="fit-label">Community</span>' +
-            '<span class="fit-tag ' + fit.community.cls + '" title="' + esc(fit.community.why) + '">' + fit.community.label + '</span></span>' +
-          '<span class="fit-line"><span class="fit-label">All pets</span>' +
-            '<span class="fit-tag ' + fit.allpets.cls + '" title="' + esc(fit.allpets.why) + '">' + fit.allpets.label + '</span></span>' +
-        '</span>' +
-        '<button class="r-x" title="Remove" onclick="removeItem(\'' + t.id + '\')">✕</button>' +
-      '</div>';
-    }).join('');
-    var n = items.length;
-    document.getElementById('stats').textContent = n + ' name' + (n !== 1 ? 's' : '') + ' checked';
-  }
-
-  // ── Availability pills ──────────────────────────────────────────
-  function formatAvail(avail) {
-    if (!avail) return '<span class="pill chk">⏳ checking…</span>';
+  // Parse availability string into [{tld, status}]
+  function parseAvail(avail) {
+    if (!avail) return null;
     return avail.split('|').map(function(p){
-      p = p.trim(); if (!p) return '';
+      p = p.trim(); if (!p) return null;
       var isAvail = p.indexOf('✅') !== -1 || (/AVAILABLE/i.test(p) && !/POSSIBLY/i.test(p));
       var isTaken = p.indexOf('❌') !== -1 || /TAKEN/i.test(p);
-      var cls, icon;
-      if (isAvail)      { cls='yes'; icon='✅'; }
-      else if (isTaken) { cls='no';  icon='❌'; }
-      else              { cls='unk'; icon='⚠️'; }
+      var status = isAvail ? 'yes' : (isTaken ? 'no' : 'unk');
       var domain = p.replace(/✅|❌|⚠️/g,'').replace(/^[A-Z][^:]*:\s*/i,'').trim();
       var dot = domain.indexOf('.');
-      var tld = dot !== -1 ? domain.slice(dot) : domain;
-      return '<span class="pill ' + cls + '">' + icon + ' ' + esc(tld) + '</span>';
-    }).filter(Boolean).join('');
+      return { tld: dot !== -1 ? domain.slice(dot) : domain, status: status };
+    }).filter(Boolean);
   }
 
-  // ── Brand-fit heuristic ─────────────────────────────────────────
-  // Two reads on the raw name: does it evoke community/belonging,
-  // and does it stay open to ALL pets (vs skewing to one species)?
+  function render() {
+    var box = document.getElementById('list');
+    if (!items.length) { box.innerHTML = '<div class="empty">No names checked yet.</div>'; return; }
+
+    box.innerHTML = items.map(function(t){
+      var base = esc(String(t.text).trim().split(/\s+/)[0].replace(/\..*$/, ''));
+      var parsed = parseAvail(t.availability);
+      var headline, exts = '';
+
+      if (!parsed) {
+        headline = '<span class="dom">' + base + '.com</span> <span class="verdict chk">checking…</span>';
+      } else {
+        // headline anchored on .com if present, else first entry
+        var primary = parsed.find(function(e){ return e.tld === '.com'; }) || parsed[0];
+        var word = primary.status === 'yes' ? 'is available' : (primary.status === 'no' ? 'is taken' : 'status unknown');
+        headline = '<span class="dom">' + base + primary.tld + '</span> <span class="verdict ' + primary.status + '">' + word + '</span>';
+
+        var others = parsed.filter(function(e){ return e !== primary; });
+        if (others.length) {
+          exts = '<div class="exts">' + others.map(function(e){
+            return '<span class="ext ' + e.status + '">' + esc(e.tld) + '</span>';
+          }).join('<span class="sep">·</span>') + '</div>';
+        }
+      }
+
+      var fit = brandFit(base);
+      var fitLine = '<div class="fit">community <b class="' + fit.community.cls + '" title="' + esc(fit.community.why) + '">' + fit.community.label.toLowerCase() +
+        '</b> &nbsp;·&nbsp; all pets <b class="' + fit.allpets.cls + '" title="' + esc(fit.allpets.why) + '">' + fit.allpets.label.toLowerCase() + '</b></div>';
+
+      return '<div class="item">' +
+        '<div class="headline">' + headline + '</div>' +
+        exts + fitLine +
+        '<button class="del" title="Remove" onclick="removeItem(\'' + t.id + '\')">✕</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ── Brand-fit heuristic ──
   function brandFit(name) {
     var n = String(name).toLowerCase();
-
     var communityWords = ['club','hub','circle','pack','community','commune','neighbour','neighbor','hood','parish','village','town','local','together','friend','family','fam','meet','share','social','society','guild','collective','coop','co-op','corner','porch','fireside','gather','den','nest','crew','squad','tribe','kin','buddy','buddies','mate','pal','connect','network','commons','lounge','cafe','campfire','world','folk','people'];
     var genericPet   = ['pet','pets','critter','creature','animal','companion','fur','furry','paw','tail','ark','menagerie','zoo','beast','buddy','friend'];
     var speciesWords = ['dog','doggo','doggy','pup','puppy','pooch','woof','bark','hound','canine','k9','cat','kitty','kitten','meow','purr','feline','mog','moggy','bird','avian','tweet','fish','hen','chick','chicken','cluck','goat','bunny','rabbit','hare','hamster','horse','pony','reptile','turtle','snake','moo','moos','cow'];
-
-    function hit(list){ return list.some(function(w){ return n.indexOf(w) !== -1; }); }
     function which(list){ return list.filter(function(w){ return n.indexOf(w) !== -1; }); }
 
-    // Community
-    var comm;
-    var cHits = which(communityWords);
-    var hasAnd = /(\band\b|&|n[- ]?)/.test(n) || n.indexOf('and') !== -1;
-    if (cHits.length) {
-      comm = { cls:'strong', label:'Strong', why:'Contains a belonging cue ("' + cHits[0] + '") that signals a shared community.' };
-    } else if (hasAnd || n.length <= 9) {
-      comm = { cls:'fair', label:'Fair', why:'Warm and approachable, but nothing explicitly signals a community — the belonging would have to come from branding.' };
-    } else {
-      comm = { cls:'weak', label:'Weak', why:'Reads as a standalone brand name; no obvious cue of togetherness or belonging.' };
-    }
+    var comm, cHits = which(communityWords), hasAnd = n.indexOf('and') !== -1 || n.indexOf('&') !== -1;
+    if (cHits.length) comm = { cls:'strong', label:'Strong', why:'Contains a belonging cue ("' + cHits[0] + '") that signals a shared community.' };
+    else if (hasAnd || n.length <= 9) comm = { cls:'fair', label:'Fair', why:'Warm and approachable, but nothing explicitly signals a community.' };
+    else comm = { cls:'weak', label:'Weak', why:'Reads as a standalone brand; no obvious cue of togetherness.' };
 
-    // Represents all pets
-    var pets;
-    var sHits = which(speciesWords);
-    var gHits = which(genericPet);
-    if (sHits.length) {
-      pets = { cls:'weak', label:'Weak', why:'Leans toward one type of animal ("' + sHits[0] + '"), which narrows the all-species promise.' };
-    } else if (gHits.length) {
-      pets = { cls:'strong', label:'Strong', why:'Uses a species-neutral term ("' + gHits[0] + '") — welcoming to every kind of pet.' };
-    } else {
-      pets = { cls:'fair', label:'Fair', why:'Invented / neutral name with no species baggage — open to all pets, but doesn’t actively say "pets".' };
-    }
+    var pets, sHits = which(speciesWords), gHits = which(genericPet);
+    if (sHits.length) pets = { cls:'weak', label:'Weak', why:'Leans toward one animal ("' + sHits[0] + '"), narrowing the all-species promise.' };
+    else if (gHits.length) pets = { cls:'strong', label:'Strong', why:'Uses a species-neutral term ("' + gHits[0] + '") — welcoming to every pet.' };
+    else pets = { cls:'fair', label:'Fair', why:'Neutral / invented name with no species baggage — open to all pets.' };
 
     return { community: comm, allpets: pets };
   }
 
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-  function showToast(msg){
-    var t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(function(){ t.classList.remove('show'); }, 2400);
-  }
+  function showToast(msg){ var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 2200); }
 </script>
 </body>
 </html>
